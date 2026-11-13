@@ -209,10 +209,21 @@ function list(parent, site, key, label, fields) {
       site[key].map((entry,index) => ({entry,index}));
     for (const {entry,index} of records) {
       const item = group(entries,label+' '+(index+1));
-      for (const [property,name,type] of fields) {
-        field(item,entry,property,name,type,property === 'startDate' && Object.hasOwn(entry,'startDate'));
-      }
+      for (const [property,name,type] of fields) field(item,entry,property,name,type);
       if (entry === newEntry) item.querySelector('input, textarea').focus();
+      if (key === 'experience') {
+        const move = direction => {
+          const destination = index + direction;
+          [site[key][index],site[key][destination]] = [site[key][destination],site[key][index]];
+          dirty = true;
+          draw(entry);
+        };
+        const up = button('Move up', () => move(1));
+        const down = button('Move down', () => move(-1));
+        up.disabled = index === site[key].length-1;
+        down.disabled = index === 0;
+        item.append(actions(up,down));
+      }
       item.append(button('Remove entry', () => {
         site[key].splice(index,1);
         dirty = true;
@@ -249,8 +260,7 @@ function showContent() {
   list(form,site,'stats','About statistics',[['value','Value'],['label','Label']]);
   list(form,site,'skills','Skill groups',[['icon','Icon or symbol'],['title','Group name'],['items','Technologies or skills']]);
   const timelineFields = [['title','Title'],['organization','Organization'],['dates','Dates'],['details','Description (one bullet per line)','textarea']];
-  list(form,site,'experience','Work experience',[...timelineFields,
-    ['startDate','Start date for sorting','date']]);
+  list(form,site,'experience','Work experience',timelineFields);
   list(form,site,'education','Education',timelineFields);
   list(form,site,'socials','Social links',[['label','Link label'],['url','URL','url']]);
   form.append(saveButton(form,'Save and publish site content',async () => {
