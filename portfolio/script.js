@@ -30,7 +30,7 @@ mobileLinks.forEach(link => {
 });
 
 // ── Scroll reveal ───────────────────────────────────────────────
-const revealEls = document.querySelectorAll('.reveal');
+
 
 const revealObserver = new IntersectionObserver(
   (entries) => {
@@ -54,7 +54,9 @@ const revealObserver = new IntersectionObserver(
   { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
 );
 
-revealEls.forEach(el => revealObserver.observe(el));
+const observeReveals = () => document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+observeReveals();
+document.addEventListener('portfolio:render', observeReveals);
 
 // ── Active nav highlight on scroll ─────────────────────────────
 const sections = document.querySelectorAll('section[id]');
