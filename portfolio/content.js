@@ -1,3 +1,4 @@
+import { orderedExperience } from '../cms/experience.js';
 import { api, configured, webUrl } from '../cms/api.js';
 
 const find = selector => document.querySelector(selector);
@@ -76,7 +77,7 @@ async function render({site, projects}) {
     set(node, 'p', entry.items);
   });
   text('#experience .section-heading', site.experienceHeading);
-  rows(timeline, timelineTemplate, site.experience, timelineRow);
+  rows(timeline, timelineTemplate, orderedExperience(site.experience).map(({entry}) => entry), timelineRow);
   if (site.education.length) {
     const education = find('#experience .container');
     education.append(element('h2','Education','section-heading reveal'));

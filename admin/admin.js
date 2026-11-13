@@ -1,3 +1,4 @@
+import { orderedExperience } from '../cms/experience.js';
 import { api, checkFile, configured, webUrl } from '../cms/api.js';
 
 const byId = id => document.getElementById(id);
@@ -202,23 +203,28 @@ function editProject(original) {
 function list(parent, site, key, label, fields) {
   const section = group(parent,label);
   const entries = node('div');
-  function draw() {
+  function draw(newEntry) {
     entries.replaceChildren();
-    site[key].forEach((entry,index) => {
+    const records = key === 'experience' ? orderedExperience(site[key]) :
+      site[key].map((entry,index) => ({entry,index}));
+    for (const {entry,index} of records) {
       const item = group(entries,label+' '+(index+1));
-      for (const [property,name,type] of fields) field(item,entry,property,name,type);
+      for (const [property,name,type] of fields) {
+        field(item,entry,property,name,type,property === 'startDate' && Object.hasOwn(entry,'startDate'));
+      }
+      if (entry === newEntry) item.querySelector('input, textarea').focus();
       item.append(button('Remove entry', () => {
         site[key].splice(index,1);
         dirty = true;
         draw();
       },'danger'));
-    });
+    }
   }
   section.append(entries,button('Add entry', () => {
-    site[key].push(Object.fromEntries(fields.map(([property]) => [property,''])));
+    const entry = Object.fromEntries(fields.map(([property]) => [property,'']));
+    site[key].push(entry);
     dirty = true;
-    draw();
-    entries.lastElementChild.querySelector('input, textarea').focus();
+    draw(entry);
   }));
   draw();
 }
@@ -243,7 +249,8 @@ function showContent() {
   list(form,site,'stats','About statistics',[['value','Value'],['label','Label']]);
   list(form,site,'skills','Skill groups',[['icon','Icon or symbol'],['title','Group name'],['items','Technologies or skills']]);
   const timelineFields = [['title','Title'],['organization','Organization'],['dates','Dates'],['details','Description (one bullet per line)','textarea']];
-  list(form,site,'experience','Work experience',timelineFields);
+  list(form,site,'experience','Work experience',[...timelineFields,
+    ['startDate','Start date for sorting','date']]);
   list(form,site,'education','Education',timelineFields);
   list(form,site,'socials','Social links',[['label','Link label'],['url','URL','url']]);
   form.append(saveButton(form,'Save and publish site content',async () => {
