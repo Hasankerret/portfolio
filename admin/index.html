@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Portfolio Admin</title>
+  <link rel="stylesheet" href="admin.css">
+  <script type="module" src="admin.js"></script>
+</head>
+<body>
+  <header><strong>Portfolio Admin</strong><a href="../portfolio/" target="_blank" rel="noopener">View portfolio ↗</a></header>
+  <main>
+    <p id="status" role="status" aria-live="polite"></p>
+    <form id="login">
+      <h1>Sign in</h1>
+      <label>Email<input type="email" name="email" autocomplete="username" required></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+      <button>Sign in</button>
+    </form>
+    <section id="dashboard" hidden>
+      <nav aria-label="Dashboard">
+        <button id="projects" type="button">Projects</button>
+        <button id="content" type="button">Site content</button>
+        <button id="logout" type="button">Sign out</button>
+      </nav>
+      <div id="editor"></div>
+    </section>
+  </main>
+</body>
+</html>
+
